@@ -1,0 +1,381 @@
+[
+  {
+    "name": "local-axes",
+    "routes": [
+      {
+        "path": "/substrates",
+        "body": {
+          "maps": [
+            "/map/1"
+          ],
+          "transfers": "/transfers"
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/map/1",
+        "body": {
+          "mapId": "m1",
+          "substrateId": "w1",
+          "parent": null,
+          "origin": [
+            10,
+            20
+          ],
+          "axes": {
+            "x": [
+              0,
+              1
+            ],
+            "y": [
+              -1,
+              0
+            ]
+          },
+          "bins": {
+            "0": {
+              "label": "not measured",
+              "state": "unmeasured"
+            },
+            "1": {
+              "label": "good",
+              "state": "pass"
+            }
+          },
+          "cells": [
+            {
+              "x": 2,
+              "y": 3,
+              "bin": "0"
+            }
+          ]
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/transfers",
+        "body": [],
+        "status": 200,
+        "method": "GET"
+      }
+    ],
+    "expected": [
+      {
+        "mapId": "m1",
+        "local": [
+          2,
+          3
+        ],
+        "physical": [
+          7,
+          22
+        ],
+        "state": "unmeasured",
+        "identityStatus": "unresolved"
+      }
+    ],
+    "forbidden": []
+  },
+  {
+    "name": "proposed-transfer",
+    "routes": [
+      {
+        "path": "/substrates",
+        "body": {
+          "maps": [
+            "/map/1"
+          ],
+          "transfers": "/transfers"
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/map/1",
+        "body": {
+          "mapId": "m1",
+          "substrateId": "w1",
+          "parent": null,
+          "origin": [
+            0,
+            0
+          ],
+          "axes": {
+            "x": [
+              1,
+              0
+            ],
+            "y": [
+              0,
+              1
+            ]
+          },
+          "bins": {
+            "1": {
+              "label": "good",
+              "state": "pass"
+            }
+          },
+          "cells": [
+            {
+              "x": 0,
+              "y": 0,
+              "bin": "1"
+            }
+          ]
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/transfers",
+        "body": [
+          {
+            "from": {
+              "mapId": "m0",
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "mapId": "m1",
+              "x": 0,
+              "y": 0
+            },
+            "dieId": "d1",
+            "status": "proposed"
+          }
+        ],
+        "status": 200,
+        "method": "GET"
+      }
+    ],
+    "expected": [
+      {
+        "mapId": "m1",
+        "identityStatus": "unresolved"
+      }
+    ],
+    "forbidden": [
+      {
+        "mapId": "m1",
+        "dieId": "d1"
+      }
+    ]
+  },
+  {
+    "name": "conflicting-transfers",
+    "routes": [
+      {
+        "path": "/substrates",
+        "body": {
+          "maps": [
+            "/map/1",
+            "/map/0"
+          ],
+          "transfers": "/transfers"
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/map/1",
+        "body": {
+          "mapId": "m1",
+          "substrateId": "w1",
+          "parent": null,
+          "origin": [
+            0,
+            0
+          ],
+          "axes": {
+            "x": [
+              1,
+              0
+            ],
+            "y": [
+              0,
+              1
+            ]
+          },
+          "bins": {
+            "1": {
+              "label": "good",
+              "state": "pass"
+            }
+          },
+          "cells": [
+            {
+              "x": 0,
+              "y": 0,
+              "bin": "1"
+            }
+          ]
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/transfers",
+        "body": [
+          {
+            "from": {
+              "mapId": "m0",
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "mapId": "m1",
+              "x": 0,
+              "y": 0
+            },
+            "dieId": "d1",
+            "status": "confirmed"
+          },
+          {
+            "from": {
+              "mapId": "m0",
+              "x": 1,
+              "y": 0
+            },
+            "to": {
+              "mapId": "m1",
+              "x": 0,
+              "y": 0
+            },
+            "dieId": "d2",
+            "status": "confirmed"
+          }
+        ],
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/map/0",
+        "body": {
+          "mapId": "m0",
+          "substrateId": "w0",
+          "parent": null,
+          "origin": [
+            0,
+            0
+          ],
+          "axes": {
+            "x": [
+              1,
+              0
+            ],
+            "y": [
+              0,
+              1
+            ]
+          },
+          "bins": {
+            "1": {
+              "label": "good",
+              "state": "pass"
+            }
+          },
+          "cells": [
+            {
+              "x": 0,
+              "y": 0,
+              "bin": "1"
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "bin": "1"
+            }
+          ]
+        },
+        "status": 200,
+        "method": "GET"
+      }
+    ],
+    "expected": [
+      {
+        "mapId": "m1",
+        "identityStatus": "conflict"
+      }
+    ],
+    "forbidden": [
+      {
+        "mapId": "m1",
+        "dieId": "d1"
+      }
+    ],
+    "complete": false
+  },
+  {
+    "name": "empty-not-failed",
+    "routes": [
+      {
+        "path": "/substrates",
+        "body": {
+          "maps": [
+            "/map/1"
+          ],
+          "transfers": "/transfers"
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/map/1",
+        "body": {
+          "mapId": "m1",
+          "substrateId": "w1",
+          "parent": null,
+          "origin": [
+            10,
+            20
+          ],
+          "axes": {
+            "x": [
+              0,
+              1
+            ],
+            "y": [
+              -1,
+              0
+            ]
+          },
+          "bins": {
+            "0": {
+              "label": "not measured",
+              "state": "empty"
+            },
+            "1": {
+              "label": "good",
+              "state": "pass"
+            }
+          },
+          "cells": [
+            {
+              "x": 2,
+              "y": 3,
+              "bin": "0"
+            }
+          ]
+        },
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "path": "/transfers",
+        "body": [],
+        "status": 200,
+        "method": "GET"
+      }
+    ],
+    "expected": [
+      {
+        "mapId": "m1",
+        "state": "empty"
+      }
+    ],
+    "forbidden": []
+  }
+]
